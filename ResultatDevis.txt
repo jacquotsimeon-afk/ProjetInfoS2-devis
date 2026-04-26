@@ -1,0 +1,59 @@
+
+===========================================
+DEVIS GENERE LE : Tue Apr 21 00:57:26 CEST 2026
+NOM DU BATIMENT : Immeuble de test 1
+DEVIS TOTAL     : 5839.994905819696 Euros
+===========================================
+
+ > NIVEAU 0 (H: 2.5m)
+   - APPARTEMENT 1
+     PIECE n°1
+       Mur 1 (Long: 10,00m)
+       Mur 2 (Long: 10,00m)
+       Mur 3 (Long: 10,00m)
+       Mur 4 (Long: 10,00m)
+         * Ouverture 1 : Fenetre
+
+ > NIVEAU 1 (H: 2.5m)
+   - APPARTEMENT 1
+     PIECE n°1
+       Mur 1 (Long: 10,00m)
+       Mur 2 (Long: 7,07m)
+       Mur 3 (Long: 7,07m)
+         * Ouverture 1 : Porte
+         * Ouverture 2 : Fenetre
+
+--- FIN DU DEVIS ---
+
+
+===========================================
+DEVIS GENERE LE : Tue Apr 21 00:59:46 CEST 2026
+NOM DU BATIMENT : MAISON DE TEST Ã©
+DEVIS TOTAL     : 5339.635453050082 Euros
+===========================================
+     PIECE n°1
+       Mur 1 (Long: 10,00m) - Revetement: Liege
+         * Ouverture 1 : Porte
+       Mur 2 (Long: 7,07m)
+       Mur 3 (Long: 7,07m) - Revetement: Carrelage
+
+--- FIN DU DEVIS ---
+
+
+===========================================
+DEVIS GENERE LE : Tue Apr 21 01:14:31 CEST 2026
+NOM DU BATIMENT : MAISON DE TEST 3
+SURFACE AU SOL TOTALE DU BATIMENT : 100,00 m2
+DEVIS TOTAL     : 11414.567522250438 Euros
+===========================================
+     PIECE n°1
+       Surface au sol de la piece : 100,00 m2
+       Revetement SOL     : Carrelage
+       Revetement PLAFOND : Lambris
+       Mur 1 (Long: 14,14m) - Revetement: Peinture
+       Mur 2 (Long: 7,07m) - Revetement: Peinture
+       Mur 3 (Long: 7,07m) - Revetement: Lambris
+         * Ouverture 1 : Porte
+
+--- FIN DU DEVIS ---
+
