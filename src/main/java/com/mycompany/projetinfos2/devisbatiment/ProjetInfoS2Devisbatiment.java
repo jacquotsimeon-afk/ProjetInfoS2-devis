@@ -109,3 +109,8 @@ public class ProjetInfoS2Devisbatiment {
         }
     }
 }
+
+/*On pourrait ajouter un menu au debut du code pour réinitialiser le fichier de resultat, explique le fonctionnement et tout ca non ?? ?
+
+
+*/
