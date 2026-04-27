@@ -57,3 +57,24 @@ DEVIS TOTAL     : 11414.567522250438 Euros
 
 --- FIN DU DEVIS ---
 
+
+===========================================
+DEVIS GENERE LE : Mon Apr 27 14:44:42 CEST 2026
+NOM DU BATIMENT : testmaison
+SURFACE AU SOL TOTALE DU BATIMENT : 200,00 m2
+DEVIS TOTAL     : 3590.0000000000005 Euros
+===========================================
+     PIECE n°1
+       Surface au sol de la piece : 200,00 m2
+       Revetement SOL     : Gazon
+       Mur 1 (Long: 14,14m)
+         * Ouverture 1 : Porte
+         * Ouverture 2 : Fenetre
+       Mur 2 (Long: 14,14m)
+         * Ouverture 1 : Fenetre
+       Mur 3 (Long: 31,62m)
+         * Ouverture 1 : Fenetre
+       Mur 4 (Long: 50,99m)
+
+--- FIN DU DEVIS ---
+
