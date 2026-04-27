@@ -6,7 +6,7 @@ package com.mycompany.projetinfos2.devisbatiment;
 
 /**
  *
- * @author Siméon
+ * @author Clémentine
  */
 public class GestionDemande {
     private Revetement[] catalogue;
