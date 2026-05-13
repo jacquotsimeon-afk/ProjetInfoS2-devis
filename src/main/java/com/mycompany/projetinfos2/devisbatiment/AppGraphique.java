@@ -38,8 +38,8 @@ public class AppGraphique extends Application {
     private TextArea zoneTexte;
     private TreeView<String> arbreProjet;
     
-    private Button btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer;
-
+    private Button btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter;
+    
     private double panX = 50, panY = 50;
     private double zoom = 1.0; // NOUVELLE VARIABLE POUR LE ZOOM
     private double lastMouseX, lastMouseY;
@@ -106,8 +106,10 @@ public class AppGraphique extends Application {
         btnAjouterMur = new Button("3. Ajouter un Mur");
         btnTerminerPiece = new Button("✔ Terminer la Pièce");
         btnCalculer = new Button("4. Calculer le Devis");
+        btnVoirCatalogue = new Button("📖 Voir le Catalogue");
+        btnExporter = new Button("💾 Exporter le Devis"); // NOUVEAU BOUTON
         
-        Button[] tousLesBoutons = {btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer};
+        Button[] tousLesBoutons = {btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter};
         for(Button b : tousLesBoutons) b.setMaxWidth(Double.MAX_VALUE);
 
         arbreProjet = new TreeView<>();
@@ -125,9 +127,12 @@ public class AppGraphique extends Application {
         zoneTexte = new TextArea("Prêt.");
         zoneTexte.setEditable(false); zoneTexte.setWrapText(true); zoneTexte.setPrefHeight(100);
 
-        menuDroite.getChildren().addAll(new Label("Actions"), btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, new Label("Explorateur détaillé :"), arbreProjet, zoneTexte);
+        // AJOUT DU BOUTON DANS LE MENU :
+        menuDroite.getChildren().addAll(new Label("Actions"), btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter, new Label("Explorateur détaillé :"), arbreProjet, zoneTexte);
 
         // --- ACTIONS ---
+        btnExporter.setOnAction(e -> exporterDevis()); // ACTION DU BOUTON
+        btnVoirCatalogue.setOnAction(e -> afficherCatalogue());
         btnNouveau.setOnAction(e -> ouvrirFormulaireNouveauProjet());
         
         btnAjoutNiveau.setOnAction(e -> {
@@ -219,8 +224,11 @@ public class AppGraphique extends Application {
         btnAjouterMur.setDisable(!aProjet || !pieceEnCours);
         btnTerminerPiece.setDisable(!aProjet || !pieceEnCours);
         btnCalculer.setDisable(!aProjet || pieceEnCours);
+        btnVoirCatalogue.setDisable(pieceEnCours);
+        btnExporter.setDisable(!aProjet || pieceEnCours); // On le bloque si on trace une pièce
     }
-
+    
+    
     private void ouvrirFormulaireNouveauProjet() {
         Dialog<ButtonType> d = new Dialog<>(); d.setTitle("Nouveau Projet");
         TextField tn = new TextField("Mon Projet"); 
@@ -463,6 +471,118 @@ public class AppGraphique extends Application {
         } catch (Exception e) {}
     }
     private HBox creerItemLegende(javafx.scene.shape.Shape f, Color c, String t) { f.setStroke(c); if (f instanceof Circle) f.setFill(c); HBox b = new HBox(10, f, new Label(t)); b.setAlignment(javafx.geometry.Pos.CENTER_LEFT); return b; }
+    private void afficherCatalogue() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Catalogue des Revêtements");
+        
+        TextArea txtCatalogue = new TextArea();
+        txtCatalogue.setEditable(false);
+        txtCatalogue.setPrefSize(450, 300);
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Désignation\t\t\tPrix/m2\t\tCompatibilité\n");
+        sb.append("----------------------------------------------------------------------\n");
+        
+        for (Revetement r : catalogue) {
+            sb.append(String.format("%-25s", r.getDesignation()))
+              .append("\t").append(r.getPrix()).append(" €\t\t"); // ON UTILISE LE BON GETTER !
+              
+            if (r.estPourMur()) sb.append("[Mur] ");
+            if (r.estPourSol()) sb.append("[Sol] ");
+            if (r.estPourPlafond()) sb.append("[Plafond] ");
+            sb.append("\n");
+        }
+        
+        txtCatalogue.setText(sb.toString());
+        
+        dialog.getDialogPane().setContent(txtCatalogue);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.showAndWait();
+    }
+    private void exporterDevis() {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Enregistrer le Devis Détaillé");
+        fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Fichier Texte", "*.txt"));
+        fileChooser.setInitialFileName("ResultatDevis_" + projetActuel.getId() + ".txt");
+        
+        java.io.File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try (java.io.PrintWriter pw = new java.io.PrintWriter(new java.io.FileWriter(file))) {
+                pw.println("===========================================================");
+                pw.println("             DEVIS DÉTAILLÉ - " + projetActuel.getId().toUpperCase());
+                pw.println("             Généré le : " + new java.util.Date());
+                pw.println("===========================================================");
+                pw.println("SURFACE SOL TOTALE : " + String.format("%.2f", projetActuel.surfaceSolBatiment()) + " m2");
+                pw.println("MONTANT TOTAL DU DEVIS : " + String.format("%.2f", projetActuel.devisBatiment()) + " €");
+                pw.println("===========================================================");
+                
+                if (projetActuel instanceof Maison) {
+                    for (Piece p : ((Maison)projetActuel).getPieces()) {
+                        if (p != null) ecrirePiece(pw, p, 2.5); // Maison : HSP par défaut 2.5m
+                    }
+                } else {
+                    for (Niveau n : ((Immeuble)projetActuel).getNiveaux()) {
+                        if (n == null) continue;
+                        pw.println("\n>>> NIVEAU " + n.getId() + " [HSP : " + n.getHauteur() + "m]");
+                        for (Appartement app : n.getApparts()) {
+                            if (app == null) continue;
+                            pw.println("    > APPARTEMENT " + app.getId());
+                            for (Piece p : app.getPieces()) {
+                                if (p != null) ecrirePiece(pw, p, n.getHauteur());
+                            }
+                        }
+                    }
+                }
+                zoneTexte.setText("Devis détaillé exporté avec succès !");
+            } catch (Exception e) { 
+                zoneTexte.setText("Erreur lors de l'exportation du fichier."); 
+            }
+        }
+    }
+
+    // 3. Ton ancienne méthode "ecrirePiece"
+   private void ecrirePiece(java.io.PrintWriter pw, Piece p, double hauteur) {
+        pw.println("\n      PIÈCE n°" + p.getId() + " (Surface Sol Brut : " + String.format("%.2f", p.surfaceSol()) + " m2)");
+        
+        // --- Détail Sol ---
+        if (p.getSol().getRevetement() != null) {
+            double prixS = p.getSol().getRevetement().montant(p.surfaceSol());
+            pw.println("        - Revêtement Sol : " + p.getSol().getRevetement().getDesignation() + " | Coût : " + String.format("%.2f", prixS) + " €");
+        }
+        
+        // --- Détail Plafond (Ajouté) ---
+        if (p.getPlafond().getRevetement() != null) {
+            double prixP = p.getPlafond().getRevetement().montant(p.surfaceSol());
+            pw.println("        - Revêtement Plafond : " + p.getPlafond().getRevetement().getDesignation() + " | Coût : " + String.format("%.2f", prixP) + " €");
+        }
+
+        if (p.getSol().getNbT() > 0) {
+            pw.println("        - Note : Surface nette sol après trémies : " + String.format("%.2f", p.getSol().surfaceNette(p.surfaceSol())) + " m2");
+        }
+
+        // --- Détail Murs ---
+        pw.println("        - Murs :");
+        for (int i = 0; i < p.getMurs().length; i++) {
+            Mur m = p.getMurs()[i];
+            if (m != null) {
+                double surfaceM = m.longueur() * hauteur;
+                pw.print("          * Mur " + (i+1) + " : Long: " + String.format("%.2f", m.longueur()) + "m | Surf: " + String.format("%.2f", surfaceM) + " m2");
+                
+                if (m.getRevetement() != null) {
+                    double prixM = m.getRevetement().montant(surfaceM);
+                    pw.print(" | Revêtement : " + m.getRevetement().getDesignation() + " (" + String.format("%.2f", prixM) + " €)");
+                } else {
+                    pw.print(" | Aucun revêtement");
+                }
+                pw.println();
+            }
+        }
+        pw.println("        >> TOTAL POUR CETTE PIÈCE : " + String.format("%.2f", p.devisPiece(hauteur)) + " €");
+    }
+    
+    
+    
+    
     public static void main(String[] args) { launch(args); }
 }
 
