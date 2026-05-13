@@ -9,7 +9,13 @@ public class Maison extends Batiment {
     }
 
     public void ajouterPiece(Piece p) { if (nbPiecesRealisees < pieces.length) pieces[nbPiecesRealisees++] = p; }
-
+    
+    public void supprimerDernierePiece() {
+        if (nbPiecesRealisees > 0) {
+            nbPiecesRealisees--;
+            pieces[nbPiecesRealisees] = null;
+        }
+    }
     @Override public double devisBatiment() {
         double total = 0;
         for (int i = 0; i < nbPiecesRealisees; i++) total += pieces[i].devisPiece(2.5);

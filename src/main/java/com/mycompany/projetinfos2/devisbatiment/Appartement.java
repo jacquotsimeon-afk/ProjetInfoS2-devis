@@ -16,6 +16,13 @@ public class Appartement {
             nbPiecesRealisees++;
         }
     }
+    
+    public void supprimerDernierePiece() {
+        if (nbPiecesRealisees > 0) {
+            nbPiecesRealisees--;
+            pieces[nbPiecesRealisees] = null;
+        }
+    }
 
     public double devisAppartement(double hauteur) {
         double total = 0;

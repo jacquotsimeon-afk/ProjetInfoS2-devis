@@ -41,6 +41,7 @@ public class AppGraphique extends Application {
     private Button btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer;
 
     private double panX = 50, panY = 50;
+    private double zoom = 1.0; // NOUVELLE VARIABLE POUR LE ZOOM
     private double lastMouseX, lastMouseY;
 
     @Override
@@ -52,12 +53,32 @@ public class AppGraphique extends Application {
         Pane conteneurDessin = new Pane(zoneDessin);
         conteneurDessin.setStyle("-fx-background-color: white; -fx-border-color: gray;");
         
+        // MODIFICATION : Verrouillage de la taille pour empêcher le dépassement à droite
+        zoneDessin.widthProperty().bind(conteneurDessin.widthProperty());
+        zoneDessin.heightProperty().bind(conteneurDessin.heightProperty());
+        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle();
+        clip.widthProperty().bind(conteneurDessin.widthProperty());
+        clip.heightProperty().bind(conteneurDessin.heightProperty());
+        conteneurDessin.setClip(clip);
+        
+        // Redessiner automatiquement si la fenêtre change de taille
+        zoneDessin.widthProperty().addListener(e -> actualiserDessin());
+        zoneDessin.heightProperty().addListener(e -> actualiserDessin());
+
         zoneDessin.setOnMousePressed(e -> { lastMouseX = e.getX(); lastMouseY = e.getY(); });
         zoneDessin.setOnMouseDragged(e -> {
             panX += e.getX() - lastMouseX; panY += e.getY() - lastMouseY;
             lastMouseX = e.getX(); lastMouseY = e.getY();
             actualiserDessin();
         });
+        
+        // MODIFICATION : Ajout du Zoom avec la molette de la souris
+        zoneDessin.setOnScroll(e -> {
+            if (e.getDeltaY() > 0) zoom *= 1.1; // Zoom avant
+            else zoom /= 1.1;                   // Zoom arrière
+            actualiserDessin();
+        });
+        
         dessinerGrilleVierge();
 
         // --- 2. MENU GAUCHE ---
@@ -158,9 +179,10 @@ public class AppGraphique extends Application {
         layoutPrincipal.setCenter(conteneurDessin);
         layoutPrincipal.setRight(menuDroite);
 
-        primaryStage.setScene(new Scene(layoutPrincipal, 1200, 800));
-        primaryStage.setTitle("Architecte 2D - Vue par Niveau");
+        primaryStage.setScene(new Scene(layoutPrincipal, 1050, 650));
+        primaryStage.setTitle("Construction 2D du plan et devis");
         primaryStage.show();
+        
     }
 
     // --- LOGIQUE DE NAVIGATION ---
@@ -202,16 +224,23 @@ public class AppGraphique extends Application {
     private void ouvrirFormulaireNouveauProjet() {
         Dialog<ButtonType> d = new Dialog<>(); d.setTitle("Nouveau Projet");
         TextField tn = new TextField("Mon Projet"); 
-        ComboBox<String> ct = new ComboBox<>(); ct.getItems().addAll("Maison", "Immeuble"); ct.getSelectionModel().selectFirst();
+        
+        // MODIFICATION ICI : Ajout des descriptions
+        ComboBox<String> ct = new ComboBox<>(); 
+        ct.getItems().addAll("Maison (1 seul niveau)", "Immeuble (plusieurs niveaux)"); 
+        ct.getSelectionModel().selectFirst();
+        
         GridPane g = new GridPane(); g.setHgap(10); g.setVgap(10); g.setPadding(new Insets(20));
         g.add(new Label("Nom :"), 0, 0); g.add(tn, 1, 0); g.add(new Label("Type :"), 0, 1); g.add(ct, 1, 1);
         d.getDialogPane().setContent(g); d.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         d.showAndWait().ifPresent(r -> { 
             if (r == ButtonType.OK) {
                 compteurPiece = 0; pieceEnCours = false;
-                if (ct.getValue().equals("Maison")) {
+                
+                // MODIFICATION ICI : Utilisation de startsWith pour s'adapter à la description
+                if (ct.getValue().startsWith("Maison")) {
                     projetActuel = new Maison(tn.getText(), 50);
-                    niveauAffiche = null; // Pas de notion de niveau pour une maison simple dans ce code
+                    niveauAffiche = null;
                 } else {
                     projetActuel = new Immeuble(tn.getText(), 10);
                     niveauActuel = new Niveau(0, 2.5, 10);
@@ -242,8 +271,11 @@ public class AppGraphique extends Application {
         GridPane g = new GridPane(); g.setHgap(10); g.setVgap(10); g.setPadding(new Insets(20));
         g.add(new Label("Début X, Y:"), 0, 0); g.add(tx1, 1, 0); g.add(ty1, 2, 0);
         g.add(new Label("Fin X, Y:"), 0, 1); g.add(tx2, 1, 1); g.add(ty2, 2, 1);
-        g.add(new Label("Ouvertures:"), 0, 2); g.add(tp, 1, 2); g.add(tf, 2, 2);
-        g.add(new Label("Revêtement:"), 0, 3); g.add(cb, 1, 3, 2, 1);
+        
+        // MODIFICATIONS ICI : Mots en entier
+        g.add(new Label("Portes / Fenêtres :"), 0, 2); g.add(tp, 1, 2); g.add(tf, 2, 2);
+        g.add(new Label("Revêtement :"), 0, 3); g.add(cb, 1, 3, 2, 1);
+        
         dialog.getDialogPane().setContent(g); dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         
         Button btnOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
@@ -261,7 +293,6 @@ public class AppGraphique extends Application {
                     if (!cb.getValue().equals("Aucun")) for (Revetement rev : catalogue) if (cb.getValue().equals(rev.getDesignation())) m.appliquerRevetement(rev);
                     pieceActuelle.ajouterMur(m);
                     
-                    // Détection fermeture automatique
                     Mur pre = pieceActuelle.getMurs()[0];
                     if (compteurMur > 3 && m.getFin().getCx() == pre.getDebut().getCx() && m.getFin().getCy() == pre.getDebut().getCy()) {
                         actualiserDessin(); actualiserArbre(); finaliserPiece();
@@ -276,6 +307,13 @@ public class AppGraphique extends Application {
     private void finaliserPiece() {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Fin de pièce");
+        dialog.setHeaderText("Finaliser la pièce : choisissez les revêtements ou recommencez.");
+
+        // MODIFICATION ICI : Ajout des boutons Valider et Recommencer
+        ButtonType btnValider = new ButtonType("Valider la pièce", ButtonBar.ButtonData.OK_DONE);
+        ButtonType btnRecommencer = new ButtonType("Recommencer la pièce", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(btnValider, btnRecommencer);
+
         ComboBox<String> cbS = new ComboBox<>(), cbP = new ComboBox<>();
         cbS.getItems().add("Aucun"); cbP.getItems().add("Aucun");
         for (Revetement r : catalogue) {
@@ -285,13 +323,30 @@ public class AppGraphique extends Application {
         cbS.getSelectionModel().selectFirst(); cbP.getSelectionModel().selectFirst();
         GridPane g = new GridPane(); g.setHgap(10); g.setVgap(10);
         g.add(new Label("Sol:"), 0, 0); g.add(cbS, 1, 0); g.add(new Label("Plafond:"), 0, 1); g.add(cbP, 1, 1);
-        dialog.getDialogPane().setContent(g); dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().setContent(g); 
+        
         dialog.showAndWait().ifPresent(r -> {
-            for (Revetement rev : catalogue) {
-                if (cbS.getValue().equals(rev.getDesignation())) pieceActuelle.getSol().appliquerRevetement(rev);
-                if (cbP.getValue().equals(rev.getDesignation())) pieceActuelle.getPlafond().appliquerRevetement(rev);
+            if (r == btnRecommencer) {
+                // LOGIQUE DE RECONSTRUCTION
+                if (projetActuel instanceof Maison) {
+                    ((Maison)projetActuel).supprimerDernierePiece();
+                } else if (appartActuel != null) {
+                    appartActuel.supprimerDernierePiece();
+                }
+                compteurPiece--; // On recule le compteur pour le prochain essai
+                pieceActuelle = null;
+                pieceEnCours = false;
+                zoneTexte.setText("Pièce annulée. Cliquez sur 'Nouvelle Pièce' pour recommencer.");
+            } else {
+                // LOGIQUE DE VALIDATION
+                for (Revetement rev : catalogue) {
+                    if (cbS.getValue().equals(rev.getDesignation())) pieceActuelle.getSol().appliquerRevetement(rev);
+                    if (cbP.getValue().equals(rev.getDesignation())) pieceActuelle.getPlafond().appliquerRevetement(rev);
+                }
+                pieceEnCours = false; 
+                zoneTexte.setText("Pièce " + pieceActuelle.getId() + " enregistrée avec succès.");
             }
-            pieceEnCours = false; majBoutons(); actualiserDessin(); actualiserArbre();
+            majBoutons(); actualiserDessin(); actualiserArbre();
         });
     }
 
@@ -342,7 +397,8 @@ public class AppGraphique extends Application {
         } else {
             for (Niveau n : ((Immeuble)projetActuel).getNiveaux()) {
                 if (n != null) {
-                    TreeItem<String> nn = new TreeItem<>("Niveau " + n.getId()); nn.setExpanded(true);
+                    // MODIFICATION ICI : Ajout de la hauteur (HSP)
+                    TreeItem<String> nn = new TreeItem<>("Niveau " + n.getId() + " (HSP: " + n.getHauteur() + "m)"); nn.setExpanded(true);
                     for (Appartement a : n.getApparts()) {
                         if (a != null) {
                             TreeItem<String> na = new TreeItem<>("Appartement " + a.getId()); na.setExpanded(true);
@@ -359,25 +415,43 @@ public class AppGraphique extends Application {
 
     private TreeItem<String> creerNoeudPiece(Piece p) {
         TreeItem<String> np = new TreeItem<>("Pièce " + p.getId());
-        if (p.getSol().getRevetement() != null) np.getChildren().add(new TreeItem<>("Sol: " + p.getSol().getRevetement().getDesignation()));
+        
+        // MODIFICATION ICI : Mots en entier pour le sol
+        if (p.getSol().getRevetement() != null) np.getChildren().add(new TreeItem<>("Revêtement Sol : " + p.getSol().getRevetement().getDesignation()));
+        
         for (Mur m : p.getMurs()) {
             if (m != null) {
                 TreeItem<String> nm = new TreeItem<>("Mur " + m.getId() + " (" + String.format("%.2f", m.longueur()) + "m)");
-                if (m.getRevetement() != null) nm.getChildren().add(new TreeItem<>("Rev: " + m.getRevetement().getDesignation()));
+                
+                // MODIFICATION ICI : Mot en entier pour le mur
+                if (m.getRevetement() != null) nm.getChildren().add(new TreeItem<>("Revêtement : " + m.getRevetement().getDesignation()));
+                
                 np.getChildren().add(nm);
             }
         }
         return np;
     }
 
-    private double toScreenX(double m) { return (m * 50) + panX; }
-    private double toScreenY(double m) { return (m * 50) + panY; }
+    // --- UTILITAIRES ---
+    // MODIFICATION : Les mathématiques prennent en compte le zoom
+    private double toScreenX(double m) { return (m * 50 * zoom) + panX; }
+    private double toScreenY(double m) { return (m * 50 * zoom) + panY; }
+    
+    // MODIFICATION : La grille s'adapte à l'écran et au zoom
     private void dessinerGrilleVierge() {
         GraphicsContext gc = zoneDessin.getGraphicsContext2D();
-        gc.clearRect(0, 0, 600, 600); gc.setStroke(Color.LIGHTGRAY);
-        for (double x=panX%50; x<600; x+=50) gc.strokeLine(x, 0, x, 600);
-        for (double y=panY%50; y<600; y+=50) gc.strokeLine(0, y, 600, y);
-        gc.setFill(Color.RED); gc.fillOval(toScreenX(0)-4, toScreenY(0)-4, 8, 8);
+        double w = zoneDessin.getWidth();
+        double h = zoneDessin.getHeight();
+        
+        gc.clearRect(0, 0, w, h); 
+        gc.setStroke(Color.LIGHTGRAY);
+        
+        double tailleCarreau = 50 * zoom;
+        for (double x = panX % tailleCarreau; x < w; x += tailleCarreau) gc.strokeLine(x, 0, x, h);
+        for (double y = panY % tailleCarreau; y < h; y += tailleCarreau) gc.strokeLine(0, y, w, y);
+        
+        gc.setFill(Color.RED); 
+        gc.fillOval(toScreenX(0)-4, toScreenY(0)-4, 8, 8);
     }
     private void chargerCatalogue() {
         try (BufferedReader br = new BufferedReader(new FileReader("CatalogueRevetements.txt"))) {
@@ -391,3 +465,5 @@ public class AppGraphique extends Application {
     private HBox creerItemLegende(javafx.scene.shape.Shape f, Color c, String t) { f.setStroke(c); if (f instanceof Circle) f.setFill(c); HBox b = new HBox(10, f, new Label(t)); b.setAlignment(javafx.geometry.Pos.CENTER_LEFT); return b; }
     public static void main(String[] args) { launch(args); }
 }
+
+//
