@@ -10,4 +10,17 @@
         <maven.compiler.release>25</maven.compiler.release>
         <exec.mainClass>com.mycompany.projetinfos2.devisbatiment.ProjetInfoS2Devisbatiment</exec.mainClass>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>19</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>19</version>
+        </dependency>
+    </dependencies>
 </project>
