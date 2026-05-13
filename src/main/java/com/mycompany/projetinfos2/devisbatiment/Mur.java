@@ -32,4 +32,7 @@ public class Mur {
     public Coin getFin() { return fin; }
     public Ouverture[] getOuvertures() { return ouvertures; }
     public int getNbO() { return nbO; }
+    public int getId() { 
+        return idMur; 
+    }
 }
