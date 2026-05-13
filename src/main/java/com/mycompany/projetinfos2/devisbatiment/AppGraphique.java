@@ -546,11 +546,13 @@ public class AppGraphique extends Application {
         
         // --- Détail Sol ---
         if (p.getSol().getRevetement() != null) {
-            double prixS = p.getSol().getRevetement().montant(p.surfaceSol());
+            double surfaceSolNette = p.surfaceSol();
+            if (p.getSol().getNbT() > 0) surfaceSolNette = p.getSol().surfaceNette(p.surfaceSol());
+            double prixS = p.getSol().getRevetement().montant(surfaceSolNette);
             pw.println("        - Revêtement Sol : " + p.getSol().getRevetement().getDesignation() + " | Coût : " + String.format("%.2f", prixS) + " €");
         }
         
-        // --- Détail Plafond (Ajouté) ---
+        // --- Détail Plafond ---
         if (p.getPlafond().getRevetement() != null) {
             double prixP = p.getPlafond().getRevetement().montant(p.surfaceSol());
             pw.println("        - Revêtement Plafond : " + p.getPlafond().getRevetement().getDesignation() + " | Coût : " + String.format("%.2f", prixP) + " €");
@@ -560,16 +562,34 @@ public class AppGraphique extends Application {
             pw.println("        - Note : Surface nette sol après trémies : " + String.format("%.2f", p.getSol().surfaceNette(p.surfaceSol())) + " m2");
         }
 
-        // --- Détail Murs ---
+        // --- Détail Murs avec déduction des ouvertures ---
         pw.println("        - Murs :");
         for (int i = 0; i < p.getMurs().length; i++) {
             Mur m = p.getMurs()[i];
             if (m != null) {
-                double surfaceM = m.longueur() * hauteur;
-                pw.print("          * Mur " + (i+1) + " : Long: " + String.format("%.2f", m.longueur()) + "m | Surf: " + String.format("%.2f", surfaceM) + " m2");
+                double surfaceBrute = m.longueur() * hauteur;
+                double surfaceOuvertures = 0;
                 
+                // 1. On somme la surface de toutes les ouvertures de ce mur
+                for (int j = 0; j < m.getNbO(); j++) {
+                    if (m.getOuvertures()[j] != null) {
+                        surfaceOuvertures += m.getOuvertures()[j].surface();
+                    }
+                }
+                
+                // 2. On calcule la surface nette (Math.max évite un résultat négatif si l'utilisateur met trop de portes)
+                double surfaceNette = Math.max(0, surfaceBrute - surfaceOuvertures);
+                
+                pw.print("          * Mur " + (i+1) + " : Long: " + String.format("%.2f", m.longueur()) + "m | Surf brute: " + String.format("%.2f", surfaceBrute) + " m2");
+                
+                // 3. Affichage conditionnel s'il y a des ouvertures
+                if (surfaceOuvertures > 0) {
+                    pw.print(" | Ouvertures: -" + String.format("%.2f", surfaceOuvertures) + " m2 | Surf nette: " + String.format("%.2f", surfaceNette) + " m2");
+                }
+                
+                // 4. Calcul du prix sur la surface NETTE
                 if (m.getRevetement() != null) {
-                    double prixM = m.getRevetement().montant(surfaceM);
+                    double prixM = m.getRevetement().montant(surfaceNette);
                     pw.print(" | Revêtement : " + m.getRevetement().getDesignation() + " (" + String.format("%.2f", prixM) + " €)");
                 } else {
                     pw.print(" | Aucun revêtement");
