@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projetinfos2.devisbatiment;
 
-/**
- *
- * @author Siméon
- */
 public class Mur {
     private int idMur;
     private Coin debut, fin;
@@ -33,9 +25,7 @@ public class Mur {
         return Math.max(0, s);
     }
 
-    public double devisMur(double h) {
-        return (revetement != null) ? revetement.montant(surface(h)) : 0;
-    }
+    public double devisMur(double h) { return (revetement != null) ? revetement.montant(surface(h)) : 0; }
 
     public Revetement getRevetement() { return revetement; }
     public Coin getDebut() { return debut; }

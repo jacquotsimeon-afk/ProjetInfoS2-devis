@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projetinfos2.devisbatiment;
 
-/**
- *
- * @author Siméon
- */
 public class Appartement {
     private int idAppart;
     private Piece[] pieces;
@@ -27,22 +19,16 @@ public class Appartement {
 
     public double devisAppartement(double hauteur) {
         double total = 0;
-        for (int i = 0; i < nbPiecesRealisees; i++) {
-            total += pieces[i].devisPiece(hauteur);
-        }
+        for (int i = 0; i < nbPiecesRealisees; i++) total += pieces[i].devisPiece(hauteur);
         return total;
     }
-    
+
     public double surfaceSolAppartement() {
-    double total = 0;
-    for (int i = 0; i < nbPiecesRealisees; i++) {
-        total += pieces[i].surfaceSol();
+        double total = 0;
+        for (int i = 0; i < nbPiecesRealisees; i++) total += pieces[i].surfaceSol();
+        return total;
     }
-    return total;
-    }
-    
 
     public Piece[] getPieces() { return pieces; }
     public int getId() { return idAppart; }
-    public int getNbPieces() { return nbPiecesRealisees; }
 }

@@ -1,16 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.projetinfos2.devisbatiment;
 
-/**
- *
- * @author Siméon
- */
 public class Sol {
     private Revetement revetement;
+    private Tremie[] tremies = new Tremie[10];
+    private int nbT = 0;
+
+    public void ajouterTremie(Tremie t) { if (nbT < tremies.length) tremies[nbT++] = t; }
     public void appliquerRevetement(Revetement r) { this.revetement = r; }
-    public double devis(double s) { return (revetement != null) ? revetement.montant(s) : 0; }
+    
+    public double surfaceNette(double brute) {
+        double s = brute;
+        for (int i = 0; i < nbT; i++) s -= tremies[i].surface();
+        return Math.max(0, s);
+    }
+
+    public double devis(double sBrute) {
+        return (revetement != null) ? revetement.montant(surfaceNette(sBrute)) : 0;
+    }
     public Revetement getRevetement() { return revetement; }
+    public Tremie[] getTremies() { return tremies; }
+    public int getNbT() { return nbT; }
 }

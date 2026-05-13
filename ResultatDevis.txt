@@ -94,3 +94,83 @@ DEVIS TOTAL     : 0.0 Euros
 
 --- FIN DU DEVIS ---
 
+
+===========================================
+DEVIS GENERE LE : Mon Apr 27 15:34:53 CEST 2026
+NOM DU BATIMENT : lqizue fhlqieurgh 
+SURFACE AU SOL TOTALE DU BATIMENT : 127,28 m2
+DEVIS TOTAL     : 24420.8417575767 Euros
+===========================================
+
+ > NIVEAU 0 (H: 1.2m)
+   SURFACE AU SOL DU NIVEAU : 127,28 m2
+   - APPARTEMENT 1 (Surface sol: 127,28 m2)
+     PIECE n°1
+       Surface au sol de la piece : 127,28 m2
+       Revetement SOL     : Marbre
+       Revetement PLAFOND : Peinture
+       Mur 1 (Long: 12,73m)
+         * Ouverture 1 : Porte
+       Mur 2 (Long: 10,00m)
+       Mur 3 (Long: 21,02m) - Revetement: Carrelage
+         * Ouverture 1 : Fenetre
+
+--- FIN DU DEVIS ---
+
+
+===========================================
+DEVIS GENERE LE : Mon Apr 27 15:39:12 CEST 2026
+NOM DU BATIMENT : kjv
+SURFACE AU SOL TOTALE DU BATIMENT : 282,84 m2
+DEVIS TOTAL     : 21540.15217620335 Euros
+===========================================
+
+ > NIVEAU 0 (H: 4.0m)
+   SURFACE AU SOL DU NIVEAU : 141,42 m2
+   - APPARTEMENT 1 (Surface sol: 141,42 m2)
+     PIECE n°1
+       Surface au sol de la piece : 141,42 m2
+       Revetement SOL     : Parquet
+       Revetement PLAFOND : Peinture
+       Mur 1 (Long: 14,14m) - Revetement: Lambris
+         * Ouverture 1 : Porte
+         * Ouverture 2 : Fenetre
+       Mur 2 (Long: 10,00m)
+       Mur 3 (Long: 5,00m) - Revetement: Liege
+         * Ouverture 1 : Fenetre
+
+ > NIVEAU 1 (H: 10.0m)
+   SURFACE AU SOL DU NIVEAU : 141,42 m2
+   - APPARTEMENT 1 (Surface sol: 141,42 m2)
+     PIECE n°1
+       Surface au sol de la piece : 141,42 m2
+       Mur 1 (Long: 14,14m)
+       Mur 2 (Long: 10,00m) - Revetement: Liege
+       Mur 3 (Long: 10,00m) - Revetement: Peinture
+       Mur 4 (Long: 20,00m)
+         * Ouverture 1 : Porte
+
+--- FIN DU DEVIS ---
+
+
+===========================================
+DEVIS DU : Wed May 13 08:51:26 CEST 2026
+PROJET : maison de clemclem
+SURFACE SOL TOTALE : 141,42 m2
+MONTANT TOTAL : 0.0 €
+===========================================
+
+ > NIVEAU 0 (Surf: 70.71067811865476m2)
+   - APPARTEMENT 1 (Surf: 70.71067811865476m2)
+     PIECE n°1 (Sol Brut: 70,71 m2)
+       Mur 1 : [Point 1 (0.0m, 0.0m)->Point 2 (10.0m, 0.0m)] Long: 10,00m
+       Mur 2 : [Point 1 (10.0m, 0.0m)->Point 2 (5.0m, 5.0m)] Long: 7,07m
+       Mur 3 : [Point 1 (5.0m, 5.0m)->Point 2 (0.0m, 0.0m)] Long: 7,07m
+
+ > NIVEAU 1 (Surf: 70.71067811865476m2)
+   - APPARTEMENT 1 (Surf: 70.71067811865476m2)
+     PIECE n°1 (Sol Brut: 70,71 m2)
+       Surface Nette Sol : 68.71067811865476 m2
+       Mur 1 : [Point 1 (0.0m, 0.0m)->Point 2 (10.0m, 0.0m)] Long: 10,00m
+       Mur 2 : [Point 1 (10.0m, 0.0m)->Point 2 (5.0m, 5.0m)] Long: 7,07m
+       Mur 3 : [Point 1 (5.0m, 5.0m)->Point 2 (0.0m, 0.0m)] Long: 7,07m
