@@ -12,115 +12,159 @@ import javafx.stage.Stage;
 
 public class AppGraphique extends Application {
     
-    private Batiment batimentActuel; // Le bâtiment en mémoire
-    private Canvas zoneDessin;       // La toile pour dessiner
-    private TextArea zoneTexte;      // L'écran de la console intégré
+    private Maison maisonActuelle; // On travaille sur une maison pour l'instant
+    private Piece pieceActuelle;   // La pièce en cours de construction
+    private int compteurMur = 1;   // Pour donner un ID aux murs
+
+    private Canvas zoneDessin;
+    private TextArea zoneTexte;
 
     @Override
     public void start(Stage primaryStage) {
-        // --- 1. ZONE DE DESSIN (Au centre) ---
+        // --- 1. ZONE DE DESSIN ---
         zoneDessin = new Canvas(600, 600);
         Pane conteneurDessin = new Pane(zoneDessin);
         conteneurDessin.setStyle("-fx-background-color: white; -fx-border-color: gray;");
+        dessinerGrilleVierge(); // Dessine la grille de fond
 
-        // --- 2. MENU DROIT (Boutons) ---
-        VBox menuDroite = new VBox(15); // 15px d'espace entre les éléments
+        // --- 2. MENU DROIT ---
+        VBox menuDroite = new VBox(15);
         menuDroite.setPadding(new Insets(15));
         menuDroite.setPrefWidth(250);
 
         Label titre = new Label("Tableau de Bord");
         titre.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
-        Button btnGenererMaison = new Button("Générer Maison Test");
-        btnGenererMaison.setMaxWidth(Double.MAX_VALUE);
+        Button btnNouveau = new Button("1. Nouveau Projet");
+        btnNouveau.setMaxWidth(Double.MAX_VALUE);
 
-        Button btnCalculerDevis = new Button("Calculer le Devis");
-        btnCalculerDevis.setMaxWidth(Double.MAX_VALUE);
+        Button btnAjouterMur = new Button("2. Ajouter un Mur");
+        btnAjouterMur.setMaxWidth(Double.MAX_VALUE);
+        btnAjouterMur.setDisable(true); // Désactivé tant qu'il n'y a pas de projet
+
+        Button btnCalculer = new Button("3. Calculer le Devis");
+        btnCalculer.setMaxWidth(Double.MAX_VALUE);
+        btnCalculer.setDisable(true);
 
         zoneTexte = new TextArea();
         zoneTexte.setEditable(false);
         zoneTexte.setWrapText(true);
         zoneTexte.setPrefHeight(300);
+        zoneTexte.setText("Bienvenue. Cliquez sur 'Nouveau Projet' pour commencer.");
 
-        menuDroite.getChildren().addAll(titre, btnGenererMaison, btnCalculerDevis, zoneTexte);
+        menuDroite.getChildren().addAll(titre, btnNouveau, btnAjouterMur, btnCalculer, zoneTexte);
 
-        // --- 3. QUE FONT LES BOUTONS ? (Les actions) ---
-        btnGenererMaison.setOnAction(e -> {
-            creerMaisonTest(); // Crée les données
-            dessinerPlan();    // Dessine le plan
-            zoneTexte.setText("Une maison de test de 4x4m a été générée !\nLes murs bleus s'affichent sur le plan.");
+        // --- 3. ACTIONS DES BOUTONS ---
+        btnNouveau.setOnAction(e -> {
+            maisonActuelle = new Maison("Mon Projet", 1);
+            pieceActuelle = new Piece(1, 50); // Pièce pouvant contenir 50 murs
+            maisonActuelle.ajouterPiece(pieceActuelle);
+            compteurMur = 1;
+            
+            dessinerGrilleVierge();
+            zoneTexte.setText("Nouveau projet créé ! Vous pouvez maintenant ajouter des murs.");
+            btnAjouterMur.setDisable(false);
+            btnCalculer.setDisable(false);
         });
 
-        btnCalculerDevis.setOnAction(e -> {
-            if (batimentActuel != null) {
-                double total = batimentActuel.devisBatiment();
-                zoneTexte.setText("--- RÉSULTAT DU DEVIS ---\n\n");
-                zoneTexte.appendText("Surface totale : " + batimentActuel.surfaceSolBatiment() + " m2\n");
-                zoneTexte.appendText("Montant total : " + total + " €");
-            } else {
-                zoneTexte.setText("Erreur : Veuillez générer un bâtiment avant de calculer le devis.");
-            }
+        btnAjouterMur.setOnAction(e -> ouvrirFormulaireMur());
+
+        btnCalculer.setOnAction(e -> {
+            double total = maisonActuelle.devisBatiment();
+            zoneTexte.setText("--- RÉSULTAT DU DEVIS ---\n\n");
+            zoneTexte.appendText("Murs dessinés : " + (compteurMur - 1) + "\n");
+            zoneTexte.appendText("Surface totale : " + maisonActuelle.surfaceSolBatiment() + " m2\n");
+            zoneTexte.appendText("Montant total : " + total + " €");
         });
 
-        // --- 4. ASSEMBLAGE DE LA FENÊTRE ---
+        // --- 4. ASSEMBLAGE ---
         BorderPane layoutPrincipal = new BorderPane();
         layoutPrincipal.setCenter(conteneurDessin);
         layoutPrincipal.setRight(menuDroite);
 
         Scene scene = new Scene(layoutPrincipal, 850, 600);
-        primaryStage.setTitle("Projet Dev' Bâtiment - Architecte 2D");
+        primaryStage.setTitle("Projet Dev' Bâtiment - Saisie Interactive");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    // --- LOGIQUE MÉTIER ---
-    
-    private void creerMaisonTest() {
-        // On simule ce que l'utilisateur aurait tapé dans la console
-        Maison m = new Maison("Maison Temoin", 1);
-        Piece p = new Piece(1, 4);
-        
-        // On crée une pièce carrée de 4 mètres sur 4, qui commence aux coordonnées (1,1)
-        p.ajouterMur(new Mur(1, new Coin(1, 1.0, 1.0), new Coin(2, 5.0, 1.0), 2)); // Haut
-        p.ajouterMur(new Mur(2, new Coin(2, 5.0, 1.0), new Coin(3, 5.0, 5.0), 2)); // Droite
-        p.ajouterMur(new Mur(3, new Coin(3, 5.0, 5.0), new Coin(4, 1.0, 5.0), 2)); // Bas
-        p.ajouterMur(new Mur(4, new Coin(4, 1.0, 5.0), new Coin(1, 1.0, 1.0), 2)); // Gauche
-        
-        m.ajouterPiece(p);
-        batimentActuel = m; // On sauvegarde dans la mémoire
+    // --- LOGIQUE DE SAISIE (LE POP-UP) ---
+    private void ouvrirFormulaireMur() {
+        // Création de la boîte de dialogue
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Ajouter un Mur");
+        dialog.setHeaderText("Saisissez les coordonnées du mur (en mètres)");
+
+        // Création des champs de texte
+        TextField txtX1 = new TextField(); txtX1.setPromptText("Ex: 1.0");
+        TextField txtY1 = new TextField(); txtY1.setPromptText("Ex: 1.0");
+        TextField txtX2 = new TextField(); txtX2.setPromptText("Ex: 5.0");
+        TextField txtY2 = new TextField(); txtY2.setPromptText("Ex: 1.0");
+
+        // Organisation dans une grille
+        GridPane grid = new GridPane();
+        grid.setHgap(10); grid.setVgap(10); grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.add(new Label("Début X1 :"), 0, 0); grid.add(txtX1, 1, 0);
+        grid.add(new Label("Début Y1 :"), 0, 1); grid.add(txtY1, 1, 1);
+        grid.add(new Label("Fin X2 :"), 0, 2);   grid.add(txtX2, 1, 2);
+        grid.add(new Label("Fin Y2 :"), 0, 3);   grid.add(txtY2, 1, 3);
+        dialog.getDialogPane().setContent(grid);
+
+        // Ajout des boutons Valider et Annuler
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // Ce qu'il se passe quand on clique sur "OK"
+        dialog.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    // On convertit le texte tapé en nombres décimaux
+                    double x1 = Double.parseDouble(txtX1.getText());
+                    double y1 = Double.parseDouble(txtY1.getText());
+                    double x2 = Double.parseDouble(txtX2.getText());
+                    double y2 = Double.parseDouble(txtY2.getText());
+
+                    // On crée le mur dans notre logique métier
+                    Mur nouveauMur = new Mur(compteurMur, new Coin(1, x1, y1), new Coin(2, x2, y2), 10);
+                    pieceActuelle.ajouterMur(nouveauMur);
+                    compteurMur++;
+
+                    // On met à jour l'écran
+                    actualiserDessin();
+                    zoneTexte.setText("Mur ajouté avec succès ! Longueur : " + String.format("%.2f", nouveauMur.longueur()) + " m");
+
+                } catch (NumberFormatException ex) {
+                    zoneTexte.setText("Erreur : Veuillez taper uniquement des chiffres avec un point (ex: 4.5).");
+                }
+            }
+        });
     }
 
-    private void dessinerPlan() {
+    // --- LOGIQUE DE DESSIN ---
+    private void dessinerGrilleVierge() {
         GraphicsContext gc = zoneDessin.getGraphicsContext2D();
-        gc.clearRect(0, 0, zoneDessin.getWidth(), zoneDessin.getHeight()); // Effacer l'écran
-
-        // Dessiner une grille (1 carreau = 1 mètre)
+        gc.clearRect(0, 0, zoneDessin.getWidth(), zoneDessin.getHeight());
         gc.setStroke(Color.LIGHTGRAY);
         gc.setLineWidth(1);
         for (int i = 0; i < 600; i += 50) {
             gc.strokeLine(i, 0, i, 600);
             gc.strokeLine(0, i, 600, i);
         }
+    }
 
-        // Dessiner la maison
-        if (batimentActuel instanceof Maison) {
-            Maison m = (Maison) batimentActuel;
-            gc.setStroke(Color.DARKBLUE); // Les murs seront bleus
-            gc.setLineWidth(4);
+    private void actualiserDessin() {
+        dessinerGrilleVierge();
+        GraphicsContext gc = zoneDessin.getGraphicsContext2D();
+        gc.setStroke(Color.DARKBLUE);
+        gc.setLineWidth(4);
 
-            for (Piece p : m.getPieces()) {
-                if (p == null) continue;
-                for (Mur mur : p.getMurs()) {
-                    if (mur == null) continue;
-                    
-                    // L'ECHELLE EST CRUCIALE : 1 mètre mathématique = 50 pixels sur l'écran
-                    double x1 = mur.getDebut().getCx() * 50;
-                    double y1 = mur.getDebut().getCy() * 50;
-                    double x2 = mur.getFin().getCx() * 50;
-                    double y2 = mur.getFin().getCy() * 50;
-
-                    gc.strokeLine(x1, y1, x2, y2); // On trace la ligne !
-                }
+        // On redessine tous les murs de la pièce actuelle
+        for (Mur mur : pieceActuelle.getMurs()) {
+            if (mur != null) {
+                double x1 = mur.getDebut().getCx() * 50;
+                double y1 = mur.getDebut().getCy() * 50;
+                double x2 = mur.getFin().getCx() * 50;
+                double y2 = mur.getFin().getCy() * 50;
+                gc.strokeLine(x1, y1, x2, y2);
             }
         }
     }
