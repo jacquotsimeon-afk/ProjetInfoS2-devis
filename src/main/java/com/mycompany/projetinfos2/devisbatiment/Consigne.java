@@ -1,9 +1,5 @@
 package com.mycompany.projetinfos2.devisbatiment;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 
 /**
  *
@@ -11,7 +7,7 @@ package com.mycompany.projetinfos2.devisbatiment;
  */
 public class Consigne {
 }
-    /*/// Modalités de création du devis
+    /** /// Modalités de création du devis
 
 Il s'agit du devis intérieur d'une maison, on considère que tous les revêtements 
 concernent uniquement les murs intérieurs.
@@ -48,5 +44,13 @@ la procédure précédente.
 Une fois l'immeuble terminé, Cliquer sur Calculer le devis pour voir apparaitre l'estimation totale.
 
 Possibilité d'exporter le devis avec toute les modalités précisées au cours de la construction.
+
+
+
+
+
+
+
+*///
     
 
