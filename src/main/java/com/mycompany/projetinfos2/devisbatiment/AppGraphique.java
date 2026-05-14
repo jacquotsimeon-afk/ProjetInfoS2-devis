@@ -33,6 +33,12 @@ public class AppGraphique extends Application {
     private int compteurAppart = 0;
     private boolean pieceEnCours = false;
     
+    // VARIABLES POUR LA SAISIE À LA SOURIS
+    private TextField champTx1, champTy1, champTx2, champTy2;
+    private boolean saisieMurEnCours = false;
+    private boolean attendPremierClic = false;
+    private boolean pointArriveeVerrouille = false; // NOUVELLE VARIABLE
+    
     private ArrayList<Revetement> catalogue = new ArrayList<>();
     private Canvas zoneDessin;
     private TextArea zoneTexte;
@@ -77,6 +83,61 @@ public class AppGraphique extends Application {
             if (e.getDeltaY() > 0) zoom *= 1.1; // Zoom avant
             else zoom /= 1.1;                   // Zoom arrière
             actualiserDessin();
+        });
+        // MODIFICATION : Suivi de la souris pour l'aperçu en direct des coordonnées
+        zoneDessin.setOnMouseMoved(e -> {
+            if (saisieMurEnCours) {
+                double mx = Math.round(((e.getX() - panX) / (50 * zoom)) * 100.0) / 100.0;
+                double my = Math.round(((e.getY() - panY) / (50 * zoom)) * 100.0) / 100.0;
+
+                if (attendPremierClic) {
+                    champTx1.setText(String.valueOf(mx));
+                    champTy1.setText(String.valueOf(my));
+                } else if (!pointArriveeVerrouille) {
+                    // Magnétisme visuel au survol (Aimant à 40cm)
+                    if (pieceActuelle != null && pieceActuelle.getMurs()[0] != null) {
+                        Coin origine = pieceActuelle.getMurs()[0].getDebut();
+                        double dist = Math.sqrt(Math.pow(mx - origine.getCx(), 2) + Math.pow(my - origine.getCy(), 2));
+                        if (dist < 0.4) {
+                            mx = origine.getCx();
+                            my = origine.getCy();
+                        }
+                    }
+                    champTx2.setText(String.valueOf(mx));
+                    champTy2.setText(String.valueOf(my));
+                }
+            }
+        });
+        // MODIFICATION : Clic sur le plan pour remplir les coordonnées du mur
+        // MODIFICATION : Clic pour verrouiller les coordonnées
+        zoneDessin.setOnMouseClicked(e -> {
+            if (saisieMurEnCours) {
+                if (attendPremierClic) {
+                    attendPremierClic = false; // On verrouille le départ
+                    pointArriveeVerrouille = false; // On commence à suivre l'arrivée
+                    zoneTexte.setText("Départ fixé ! Bougez la souris pour l'arrivée et cliquez pour verrouiller.");
+                } else {
+                    // On bascule le verrouillage de l'arrivée à chaque clic
+                    pointArriveeVerrouille = !pointArriveeVerrouille;
+                    
+                    if (pointArriveeVerrouille) {
+                        double mx = Double.parseDouble(champTx2.getText());
+                        double my = Double.parseDouble(champTy2.getText());
+                        if (pieceActuelle.getMurs()[0] != null) {
+                            Coin origine = pieceActuelle.getMurs()[0].getDebut();
+                            if (mx == origine.getCx() && my == origine.getCy()) {
+                                zoneTexte.setText("Fermeture détectée et verrouillée ! Validez le formulaire.");
+                            } else {
+                                zoneTexte.setText("Arrivée verrouillée. Validez ou recliquez sur le plan pour modifier.");
+                            }
+                        } else {
+                            zoneTexte.setText("Arrivée verrouillée. Validez ou recliquez sur le plan pour modifier.");
+                        }
+                    } else {
+                        zoneTexte.setText("Arrivée déverrouillée. Bougez la souris...");
+                    }
+                }
+            }
         });
         
         dessinerGrilleVierge();
@@ -265,33 +326,57 @@ public class AppGraphique extends Application {
     private void ouvrirFormulaireMur() {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Nouveau Mur");
+        
+        // MODIFICATION ICI : La fenêtre ne bloque plus la souris sur le plan (Non-Modale)
+        dialog.initModality(javafx.stage.Modality.NONE);
+        // NOUVELLE LIGNE : Force la fenêtre à rester par-dessus l'application
+        dialog.initOwner(zoneDessin.getScene().getWindow());
+        
         Mur dernierMur = null;
         for (Mur m : pieceActuelle.getMurs()) if (m != null) dernierMur = m;
         TextField tx1 = new TextField(), ty1 = new TextField(), tx2 = new TextField(), ty2 = new TextField();
+        
         if (dernierMur != null) {
-            tx1.setText(String.valueOf(dernierMur.getFin().getCx())); ty1.setText(String.valueOf(dernierMur.getFin().getCy()));
+            tx1.setText(String.valueOf(dernierMur.getFin().getCx())); 
+            ty1.setText(String.valueOf(dernierMur.getFin().getCy()));
+            // VERROUILLAGE STRICT du point de départ
             tx1.setEditable(false); ty1.setEditable(false);
+            tx1.setStyle("-fx-background-color: #eeeeee;"); ty1.setStyle("-fx-background-color: #eeeeee;");
+            attendPremierClic = false; 
+            pointArriveeVerrouille = false; // AJOUT ICI
+            zoneTexte.setText("Bougez la souris pour placer l'arrivée du mur, puis cliquez pour verrouiller.");
+        } else {
+            attendPremierClic = true; 
+            pointArriveeVerrouille = false; // AJOUT ICI
+            zoneTexte.setText("1er mur : Bougez la souris et cliquez pour fixer le DÉPART.");
         }
+
+        // Connexion avec les clics de la souris
+        champTx1 = tx1; champTy1 = ty1; champTx2 = tx2; champTy2 = ty2;
+        saisieMurEnCours = true;
+        btnAjouterMur.setDisable(true); // On évite d'ouvrir le formulaire en double
+
         TextField tp = new TextField("0"), tf = new TextField("0");
         ComboBox<String> cb = new ComboBox<>(); cb.getItems().add("Aucun");
         for (Revetement r : catalogue) if (r.estPourMur()) cb.getItems().add(r.getDesignation());
         cb.getSelectionModel().selectFirst();
+        
         GridPane g = new GridPane(); g.setHgap(10); g.setVgap(10); g.setPadding(new Insets(20));
         g.add(new Label("Début X, Y:"), 0, 0); g.add(tx1, 1, 0); g.add(ty1, 2, 0);
         g.add(new Label("Fin X, Y:"), 0, 1); g.add(tx2, 1, 1); g.add(ty2, 2, 1);
-        
-        // MODIFICATIONS ICI : Mots en entier
         g.add(new Label("Portes / Fenêtres :"), 0, 2); g.add(tp, 1, 2); g.add(tf, 2, 2);
         g.add(new Label("Revêtement :"), 0, 3); g.add(cb, 1, 3, 2, 1);
-        
         dialog.getDialogPane().setContent(g); dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         
         Button btnOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
         btnOk.setDisable(true);
-        Runnable verif = () -> btnOk.setDisable(tx2.getText().isEmpty() || ty2.getText().isEmpty());
+        // Vérification incluant désormais X1 et Y1 pour le premier mur
+        Runnable verif = () -> btnOk.setDisable(tx2.getText().isEmpty() || ty2.getText().isEmpty() || tx1.getText().isEmpty() || ty1.getText().isEmpty());
+        tx1.textProperty().addListener((o, old, n) -> verif.run()); ty1.textProperty().addListener((o, old, n) -> verif.run());
         tx2.textProperty().addListener((o, old, n) -> verif.run()); ty2.textProperty().addListener((o, old, n) -> verif.run());
 
         dialog.showAndWait().ifPresent(r -> {
+            saisieMurEnCours = false; 
             if (r == ButtonType.OK) {
                 try {
                     Mur m = new Mur(compteurMur++, new Coin(1, Double.parseDouble(tx1.getText()), Double.parseDouble(ty1.getText())), 
@@ -309,7 +394,10 @@ public class AppGraphique extends Application {
                     }
                 } catch (Exception ex) { zoneTexte.setText("Erreur de saisie."); }
             }
+            majBoutons();
         });
+        saisieMurEnCours = false; // Sécurité si on ferme avec la croix
+        majBoutons();
     }
 
     private void finaliserPiece() {
@@ -606,4 +694,6 @@ public class AppGraphique extends Application {
     public static void main(String[] args) { launch(args); }
 }
 
-//
+//dessin souris ou coordonnées
+// faire consignes
+/// nom de pièce 
