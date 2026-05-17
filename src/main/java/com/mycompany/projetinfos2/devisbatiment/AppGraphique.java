@@ -23,8 +23,8 @@ public class AppGraphique extends Application {
     // --- DONNÉES DU PROJET ---
     private Batiment projetActuel;
     private Piece pieceActuelle;
-    private Niveau niveauActuel;      // Le niveau où l'on travaille
-    private Niveau niveauAffiche;      // Le niveau que l'on voit à l'écran
+    private Niveau niveauActuel;      
+    private Niveau niveauAffiche;      
     private Appartement appartActuel;
     
     private int compteurMur = 1;
@@ -37,17 +37,17 @@ public class AppGraphique extends Application {
     private TextField champTx1, champTy1, champTx2, champTy2;
     private boolean saisieMurEnCours = false;
     private boolean attendPremierClic = false;
-    private boolean pointArriveeVerrouille = false; // NOUVELLE VARIABLE
+    private boolean pointArriveeVerrouille = false; 
     
     private ArrayList<Revetement> catalogue = new ArrayList<>();
     private Canvas zoneDessin;
     private TextArea zoneTexte;
     private TreeView<String> arbreProjet;
     
-    private Button btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter;
+    private Button btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter, btnConsigne;
     
     private double panX = 50, panY = 50;
-    private double zoom = 1.0; // NOUVELLE VARIABLE POUR LE ZOOM
+    private double zoom = 1.0; 
     private double lastMouseX, lastMouseY;
 
     @Override
@@ -59,7 +59,7 @@ public class AppGraphique extends Application {
         Pane conteneurDessin = new Pane(zoneDessin);
         conteneurDessin.setStyle("-fx-background-color: white; -fx-border-color: gray;");
         
-        // MODIFICATION : Verrouillage de la taille pour empêcher le dépassement à droite
+       
         zoneDessin.widthProperty().bind(conteneurDessin.widthProperty());
         zoneDessin.heightProperty().bind(conteneurDessin.heightProperty());
         javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle();
@@ -78,13 +78,13 @@ public class AppGraphique extends Application {
             actualiserDessin();
         });
         
-        // MODIFICATION : Ajout du Zoom avec la molette de la souris
+        
         zoneDessin.setOnScroll(e -> {
             if (e.getDeltaY() > 0) zoom *= 1.1; // Zoom avant
             else zoom /= 1.1;                   // Zoom arrière
             actualiserDessin();
         });
-        // MODIFICATION : Suivi de la souris pour l'aperçu en direct des coordonnées
+        
         zoneDessin.setOnMouseMoved(e -> {
             if (saisieMurEnCours) {
                 double mx = Math.round(((e.getX() - panX) / (50 * zoom)) * 100.0) / 100.0;
@@ -108,16 +108,15 @@ public class AppGraphique extends Application {
                 }
             }
         });
-        // MODIFICATION : Clic sur le plan pour remplir les coordonnées du mur
-        // MODIFICATION : Clic pour verrouiller les coordonnées
+        
         zoneDessin.setOnMouseClicked(e -> {
             if (saisieMurEnCours) {
                 if (attendPremierClic) {
-                    attendPremierClic = false; // On verrouille le départ
-                    pointArriveeVerrouille = false; // On commence à suivre l'arrivée
+                    attendPremierClic = false; 
+                    pointArriveeVerrouille = false; 
                     zoneTexte.setText("Départ fixé ! Bougez la souris pour l'arrivée et cliquez pour verrouiller.");
                 } else {
-                    // On bascule le verrouillage de l'arrivée à chaque clic
+                    
                     pointArriveeVerrouille = !pointArriveeVerrouille;
                     
                     if (pointArriveeVerrouille) {
@@ -168,9 +167,10 @@ public class AppGraphique extends Application {
         btnTerminerPiece = new Button("✔ Terminer la Pièce");
         btnCalculer = new Button("4. Calculer le Devis");
         btnVoirCatalogue = new Button("📖 Voir le Catalogue");
-        btnExporter = new Button("💾 Exporter le Devis"); // NOUVEAU BOUTON
+        btnExporter = new Button("💾 Exporter le Devis");
+        btnConsigne = new Button("💡 Consignes d'utilisation");
         
-        Button[] tousLesBoutons = {btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter};
+        Button[] tousLesBoutons = {btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter, btnConsigne};
         for(Button b : tousLesBoutons) b.setMaxWidth(Double.MAX_VALUE);
 
         arbreProjet = new TreeView<>();
@@ -179,8 +179,7 @@ public class AppGraphique extends Application {
         // --- LOGIQUE DE SELECTION DANS L'ARBORESCENCE ---
         arbreProjet.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && !pieceEnCours) {
-                String texte = newVal.getValue();
-                // Si on clique sur un niveau (ou un enfant d'un niveau), on change de vue
+                String texte = newVal.getValue();              
                 identifierEtAfficherNiveau(newVal);
             }
         });
@@ -188,11 +187,12 @@ public class AppGraphique extends Application {
         zoneTexte = new TextArea("Prêt.");
         zoneTexte.setEditable(false); zoneTexte.setWrapText(true); zoneTexte.setPrefHeight(100);
 
-        // AJOUT DU BOUTON DANS LE MENU :
-        menuDroite.getChildren().addAll(new Label("Actions"), btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter, new Label("Explorateur détaillé :"), arbreProjet, zoneTexte);
+        
+        menuDroite.getChildren().addAll(new Label("Actions"), btnNouveau, btnAjoutNiveau, btnAjoutAppart, btnNouvellePiece, btnAjouterMur, btnTerminerPiece, btnCalculer, btnVoirCatalogue, btnExporter, btnConsigne, new Label("Explorateur détaillé :"), arbreProjet, zoneTexte);
 
         // --- ACTIONS ---
-        btnExporter.setOnAction(e -> exporterDevis()); // ACTION DU BOUTON
+        btnConsigne.setOnAction(e -> afficherConsignes());
+        btnExporter.setOnAction(e -> exporterDevis());
         btnVoirCatalogue.setOnAction(e -> afficherCatalogue());
         btnNouveau.setOnAction(e -> ouvrirFormulaireNouveauProjet());
         
@@ -254,7 +254,6 @@ public class AppGraphique extends Application {
     // --- LOGIQUE DE NAVIGATION ---
     private void identifierEtAfficherNiveau(TreeItem<String> item) {
         TreeItem<String> current = item;
-        // On remonte l'arbre pour trouver le parent "Niveau X"
         while (current != null) {
             if (current.getValue().startsWith("Niveau ")) {
                 int idSelectionne = Integer.parseInt(current.getValue().substring(7));
@@ -286,8 +285,10 @@ public class AppGraphique extends Application {
         btnTerminerPiece.setDisable(!aProjet || !pieceEnCours);
         btnCalculer.setDisable(!aProjet || pieceEnCours);
         btnVoirCatalogue.setDisable(pieceEnCours);
-        btnExporter.setDisable(!aProjet || pieceEnCours); // On le bloque si on trace une pièce
+        btnExporter.setDisable(!aProjet || pieceEnCours); 
+        btnConsigne.setDisable(pieceEnCours); // On bloque les consignes si on trace un mur
     }
+    
     
     
     private void ouvrirFormulaireNouveauProjet() {
@@ -306,7 +307,6 @@ public class AppGraphique extends Application {
             if (r == ButtonType.OK) {
                 compteurPiece = 0; pieceEnCours = false;
                 
-                // MODIFICATION ICI : Utilisation de startsWith pour s'adapter à la description
                 if (ct.getValue().startsWith("Maison")) {
                     projetActuel = new Maison(tn.getText(), 50);
                     niveauAffiche = null;
@@ -327,9 +327,9 @@ public class AppGraphique extends Application {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Nouveau Mur");
         
-        // MODIFICATION ICI : La fenêtre ne bloque plus la souris sur le plan (Non-Modale)
+        
         dialog.initModality(javafx.stage.Modality.NONE);
-        // NOUVELLE LIGNE : Force la fenêtre à rester par-dessus l'application
+        
         dialog.initOwner(zoneDessin.getScene().getWindow());
         
         Mur dernierMur = null;
@@ -339,7 +339,7 @@ public class AppGraphique extends Application {
         if (dernierMur != null) {
             tx1.setText(String.valueOf(dernierMur.getFin().getCx())); 
             ty1.setText(String.valueOf(dernierMur.getFin().getCy()));
-            // VERROUILLAGE STRICT du point de départ
+            
             tx1.setEditable(false); ty1.setEditable(false);
             tx1.setStyle("-fx-background-color: #eeeeee;"); ty1.setStyle("-fx-background-color: #eeeeee;");
             attendPremierClic = false; 
@@ -351,10 +351,10 @@ public class AppGraphique extends Application {
             zoneTexte.setText("1er mur : Bougez la souris et cliquez pour fixer le DÉPART.");
         }
 
-        // Connexion avec les clics de la souris
+        
         champTx1 = tx1; champTy1 = ty1; champTx2 = tx2; champTy2 = ty2;
         saisieMurEnCours = true;
-        btnAjouterMur.setDisable(true); // On évite d'ouvrir le formulaire en double
+        btnAjouterMur.setDisable(true); 
 
         TextField tp = new TextField("0"), tf = new TextField("0");
         ComboBox<String> cb = new ComboBox<>(); cb.getItems().add("Aucun");
@@ -493,7 +493,7 @@ public class AppGraphique extends Application {
         } else {
             for (Niveau n : ((Immeuble)projetActuel).getNiveaux()) {
                 if (n != null) {
-                    // MODIFICATION ICI : Ajout de la hauteur (HSP)
+                    
                     TreeItem<String> nn = new TreeItem<>("Niveau " + n.getId() + " (HSP: " + n.getHauteur() + "m)"); nn.setExpanded(true);
                     for (Appartement a : n.getApparts()) {
                         if (a != null) {
@@ -529,11 +529,11 @@ public class AppGraphique extends Application {
     }
 
     // --- UTILITAIRES ---
-    // MODIFICATION : Les mathématiques prennent en compte le zoom
+    
     private double toScreenX(double m) { return (m * 50 * zoom) + panX; }
     private double toScreenY(double m) { return (m * 50 * zoom) + panY; }
     
-    // MODIFICATION : La grille s'adapte à l'écran et au zoom
+    
     private void dessinerGrilleVierge() {
         GraphicsContext gc = zoneDessin.getGraphicsContext2D();
         double w = zoneDessin.getWidth();
@@ -573,7 +573,7 @@ public class AppGraphique extends Application {
         
         for (Revetement r : catalogue) {
             sb.append(String.format("%-25s", r.getDesignation()))
-              .append("\t").append(r.getPrix()).append(" €\t\t"); // ON UTILISE LE BON GETTER !
+              .append("\t").append(r.getPrix()).append(" €\t\t");
               
             if (r.estPourMur()) sb.append("[Mur] ");
             if (r.estPourSol()) sb.append("[Sol] ");
@@ -628,7 +628,7 @@ public class AppGraphique extends Application {
         }
     }
 
-    // 3. Ton ancienne méthode "ecrirePiece"
+   
    private void ecrirePiece(java.io.PrintWriter pw, Piece p, double hauteur) {
         pw.println("\n      PIÈCE n°" + p.getId() + " (Surface Sol Brut : " + String.format("%.2f", p.surfaceSol()) + " m2)");
         
@@ -675,7 +675,7 @@ public class AppGraphique extends Application {
                     pw.print(" | Ouvertures: -" + String.format("%.2f", surfaceOuvertures) + " m2 | Surf nette: " + String.format("%.2f", surfaceNette) + " m2");
                 }
                 
-                // 4. Calcul du prix sur la surface NETTE
+                // 4. Calcul du prix sur la surface nette
                 if (m.getRevetement() != null) {
                     double prixM = m.getRevetement().montant(surfaceNette);
                     pw.print(" | Revêtement : " + m.getRevetement().getDesignation() + " (" + String.format("%.2f", prixM) + " €)");
@@ -687,13 +687,25 @@ public class AppGraphique extends Application {
         }
         pw.println("        >> TOTAL POUR CETTE PIÈCE : " + String.format("%.2f", p.devisPiece(hauteur)) + " €");
     }
+   private void afficherConsignes() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Consignes d'utilisation");
+        dialog.initOwner(zoneDessin.getScene().getWindow());
+
+        // On appelle directement la classe Consigne pour récupérer le texte
+        TextArea txtConsigne = new TextArea(Consigne.getTexte());
+        txtConsigne.setEditable(false);
+        txtConsigne.setWrapText(true);
+        txtConsigne.setPrefSize(550, 450);
+        txtConsigne.setStyle("-fx-font-size: 14px;");
+
+        dialog.getDialogPane().setContent(txtConsigne);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.showAndWait();
+    }
     
     
     
     
     public static void main(String[] args) { launch(args); }
 }
-
-//dessin souris ou coordonnées
-// faire consignes
-/// nom de pièce 
