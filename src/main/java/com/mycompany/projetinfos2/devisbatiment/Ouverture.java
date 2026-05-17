@@ -1,14 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+/* =========================================================================
+ * NOM DE LA CLASSE : Ouverture
+ * DATE DE MISE À JOUR : Mai 2026
+ * CATÉGORIE TECHNIQUE : Classe Abstraite (Modèle parent)
+ * =========================================================================
+ * DESCRIPTION EN 2 LIGNES :
+ * Modèle générique représentant un "trou" dans un mur ou un sol.
+ * Force ses sous-classes (Porte, Fenêtre, Trémie) à définir leur propre surface.
+ * =========================================================================
+ * @author Clémentine / Siméon
+ * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;
 
-/**
- *
- * @author Siméon
- */
 public abstract class Ouverture {
+    // Méthode abstraite : chaque type d'ouverture devra fournir sa formule de surface
     public abstract double surface();
+    // Méthode abstraite : chaque ouverture devra pouvoir donner son nom (ex: "Porte")
     public abstract String getNom();
 }

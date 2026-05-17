@@ -1,8 +1,21 @@
+/* =========================================================================
+ * NOM DE LA CLASSE : Consigne
+ * DATE DE MISE À JOUR : Mai 2026
+ * CATÉGORIE TECHNIQUE : Classe Utilitaire / Texte
+ * =========================================================================
+ * DESCRIPTION EN 2 LIGNES :
+ * Contient tout le texte d'aide du logiciel. Permet de séparer les longs 
+ * paragraphes d'explication du reste du code pour garder le projet propre.
+ * =========================================================================
+ * @author Clémentine / Siméon
+ * =========================================================================
+ */
 package com.mycompany.projetinfos2.devisbatiment;
 
 public class Consigne {
     
-    // Méthode simple qui renvoie tout le texte des consignes
+    // Le mot-clé "static" permet d'utiliser cette méthode directement (Consigne.getTexte())
+    // sans avoir besoin de créer un objet "new Consigne()" dans l'application.
     public static String getTexte() {
         return "--- MODALITÉS DE CRÉATION DU DEVIS ---\n\n"
              + "Il s'agit du devis intérieur d'une maison, on considère que tous les revêtements\n"
