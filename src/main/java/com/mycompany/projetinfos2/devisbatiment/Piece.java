@@ -17,6 +17,7 @@ public class Piece {
     // Tableau contenant les murs (cloisons) de la pièce
     private Mur[] murs;
     private int nbM = 0;
+    private String nom; //Nom de la pièce
     
     // Instanciation directe d'un sol et d'un plafond dès la création de la pièce
     private Sol sol = new Sol();
@@ -25,6 +26,7 @@ public class Piece {
     public Piece(int id, int nbrMurs) {
         this.idPiece = id;
         this.murs = new Mur[nbrMurs];
+        this.nom = "Pièce n°" + id;
     }
 
     public void ajouterMur(Mur m) { 
@@ -46,7 +48,9 @@ public class Piece {
         return total;
     }
 
-    // Getters
+    // Getters // Setters
+    public void setNom(String n) { this.nom = n; }
+    public String getNom() { return nom; }
     public Mur[] getMurs() { return murs; }
     public Sol getSol() { return sol; }
     public Plafond getPlafond() { return plafond; }
