@@ -406,6 +406,8 @@ public class AppGraphique extends Application {
         dialog.getDialogPane().setContent(g); dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         
         dialog.showAndWait().ifPresent(r -> {
+            pieceActuelle.setNom(txtNomPiece.getText());
+            
             for(Revetement rev : catalogue) {
                 if(cbSol.getValue().equals(rev.getDesignation())) pieceActuelle.getSol().appliquerRevetement(rev);
                 if(cbPlat.getValue().equals(rev.getDesignation())) pieceActuelle.getPlafond().appliquerRevetement(rev);
@@ -526,14 +528,15 @@ public class AppGraphique extends Application {
         }
 
         // 3. Dessin du Nom de la Pièce au centre
-        if (nbPointsPourCentre > 2 && p != pieceActuelle) { // Uniquement si la pièce est finie
+        if (nbPointsPourCentre > 2 && p != pieceActuelle) { 
             double centreX = sommeX / nbPointsPourCentre;
             double centreY = sommeY / nbPointsPourCentre;
             
             gc.setFill(Color.BLACK);
-            // La police grandit ou rétrécit avec le zoom
             gc.setFont(Font.font("Arial", FontWeight.BOLD, 14 * zoom)); 
-            gc.fillText("Pièce n°" + p.getId(), centreX - (25 * zoom), centreY);
+            // On force le texte à se centrer parfaitement sur son repère
+            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER); 
+            gc.fillText(p.getNom(), centreX, centreY);
         }
     }
 
@@ -545,7 +548,7 @@ public class AppGraphique extends Application {
         
         if (projetActuel instanceof Maison) {
             for (Piece p : ((Maison) projetActuel).getPieces()) {
-                if (p != null) racine.getChildren().add(new TreeItem<>("Pièce n°" + p.getId()));
+                if (p != null) racine.getChildren().add(new TreeItem<>(p.getNom()));
             }
         } else {
             for (Niveau n : ((Immeuble) projetActuel).getNiveaux()) {
@@ -638,7 +641,7 @@ public class AppGraphique extends Application {
     }
 
     private void ecrirePiece(java.io.PrintWriter pw, Piece p, double hauteur) {
-        pw.println("\n      PIÈCE n°" + p.getId() + " (Surface Sol Brut : " + String.format("%.2f", p.surfaceSol()) + " m2)");
+        pw.println("\n      " + p.getNom().toUpperCase() + " (Surface Sol Brut : " + String.format("%.2f", p.surfaceSol()) + " m2)");
         if (p.getSol().getRevetement() != null) {
             double surfaceSolNette = p.surfaceSol();
             if (p.getSol().getNbT() > 0) surfaceSolNette = p.getSol().surfaceNette(p.surfaceSol());
