@@ -7,7 +7,7 @@
  * Représente un point mathématique (coordonnées X et Y en mètres) sur le plan.
  * Utilisé pour définir le point de départ et le point d'arrivée de chaque mur.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

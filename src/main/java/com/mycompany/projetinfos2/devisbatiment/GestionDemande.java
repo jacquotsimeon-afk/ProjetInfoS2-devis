@@ -39,7 +39,7 @@ public class GestionDemande {
             // Boucle itérative pour forcer le paramétrage séquentiel de chaque pièce
             for (int i = 0; i < nbP; i++) m.ajouterPiece(saisirPiece(i + 1, 2.5));
             return m;
-        } else { // Mode Immeuble à étages
+        } else { // Mode Immeuble et Maison à étages
             System.out.print("Nombre de niveaux : ");
             int nbN = Lire.entierCompris(1, 500);
             Immeuble imm = new Immeuble(id, nbN);

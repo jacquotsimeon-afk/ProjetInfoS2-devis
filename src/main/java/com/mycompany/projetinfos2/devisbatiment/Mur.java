@@ -7,7 +7,7 @@
  * Représente une cloison avec un point de départ et de fin.
  * Gère ses propres ouvertures (portes/fenêtres) pour déduire la surface nette à peindre.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

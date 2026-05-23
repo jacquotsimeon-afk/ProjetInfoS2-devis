@@ -7,14 +7,14 @@
  * Représente un "trou" horizontal dans le sol ou le plafond.
  * Utilisé principalement pour le passage des escaliers ou cheminées.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;
 
 public class Tremie extends Ouverture {
     private int idTremie;
-    // Contrairement aux portes qui ont une taille standard, la surface d'une trémie est libre
+    // Ici pas de taille standard, la surface d'une trémie est libre
     private double surface;
     
     // Constructeur : on exige l'identifiant ET la surface choisie par l'utilisateur

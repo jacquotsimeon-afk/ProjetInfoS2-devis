@@ -7,7 +7,7 @@
  * Représente la surface inférieure (plancher) d'une pièce.
  * Gère ses revêtements et ses trémies pour calculer le devis net.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Clémentine 
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

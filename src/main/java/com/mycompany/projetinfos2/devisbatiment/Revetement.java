@@ -7,12 +7,13 @@
  * Représente un matériau du catalogue (peinture, carrelage, etc.).
  * Définit où il a le droit d'être appliqué (Mur, Sol, Plafond).
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Clémentine 
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;
 
 public abstract class Revetement {
+    // protected pour être accessible pas les sous classes 
     protected int idRevetement;
     protected String designation;
     protected double prix; // Prix au mètre carré

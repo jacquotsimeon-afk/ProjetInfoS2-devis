@@ -7,7 +7,7 @@
  * Représente une ouverture de type Porte sur un mur. 
  * Définit ses dimensions standards pour pouvoir déduire sa surface à peindre.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

@@ -7,7 +7,7 @@
  * Représente un appartement qui sert de conteneur pour un ensemble de pièces.
  * Permet de faire la somme des surfaces et des devis de toutes ses pièces.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;
@@ -60,7 +60,7 @@ public class Appartement {
         return total;
     }
 
-    // Getters basiques
+    // Getters
     public Piece[] getPieces() { return pieces; }
     public int getId() { return idAppart; }
 }

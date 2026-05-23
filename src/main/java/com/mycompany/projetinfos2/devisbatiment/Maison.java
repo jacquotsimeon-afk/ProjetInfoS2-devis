@@ -7,7 +7,7 @@
  * Représente un bâtiment simple de plain-pied (sans étages).
  * Elle contient directement ses pièces et calcule son devis en les additionnant.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Clémentine 
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

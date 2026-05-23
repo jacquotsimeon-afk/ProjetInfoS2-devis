@@ -7,7 +7,7 @@
  * Ancienne classe principale (version texte). Elle charge le catalogue,
  * lance l'interrogatoire dans la console et sauvegarde le devis en .txt.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

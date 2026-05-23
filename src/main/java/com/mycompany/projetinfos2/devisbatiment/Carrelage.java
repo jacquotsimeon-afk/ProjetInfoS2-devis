@@ -7,7 +7,7 @@
  * Définit un revêtement spécifique de type carrelage. 
  * Hérite des attributs de la classe mère Revetement et gère son calcul de prix.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Clémentine 
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

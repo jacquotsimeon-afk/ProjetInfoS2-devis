@@ -7,7 +7,7 @@
  * Modèle générique représentant un "trou" dans un mur ou un sol.
  * Force ses sous-classes (Porte, Fenêtre, Trémie) à définir leur propre surface.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

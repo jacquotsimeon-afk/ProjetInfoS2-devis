@@ -7,7 +7,7 @@
  * Représente un étage complet d'un immeuble.
  * Il sert de conteneur pour regrouper plusieurs appartements sur un même palier.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

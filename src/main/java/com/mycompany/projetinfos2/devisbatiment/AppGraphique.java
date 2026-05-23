@@ -7,7 +7,7 @@
  * Classe principale pour l'interface graphique JavaFX de l'application.
  * Elle permet de dessiner le bâtiment visuellement, choisir les revêtements, de générer le devis puis l'exporter.
  * =========================================================================
- * @author Siméon, Clémentine
+ * @author Siméon
  * =========================================================================
  */
 
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 public class AppGraphique extends Application {
     
     //VARIABLES GLOBALES
-    private Batiment projetActuel;  //Mémorise le projet global (polymorphisme : peut être une Maison ou un Immeuble)   
+    private Batiment projetActuel;  //Mémorise le projet global (On utilise le polymorphisme : peut être une Maison ou un Immeuble)   
     private Piece pieceActuelle;  //Mémorise la pièce en cours de création pour y ajouter des murs    
     private Niveau niveauActuel;  //Mémorise l'étage sur lequel l'utilisateur est en train de travailler (logique métier)     
     private Niveau niveauAffiche; //Mémorise l'étage que l'utilisateur a choisi de regarder sur le plan (logique visuelle)     
@@ -117,7 +117,8 @@ public class AppGraphique extends Application {
                         double dist = Math.sqrt(Math.pow(mx - origine.getCx(), 2) + Math.pow(my - origine.getCy(), 2));
                         
                         if (dist < 0.4) {        // Si on s'approche à moins de 40 cm (0.4m) du point de départ
-                            //On force les coordonnées de la souris à être exactement celles du point de départ (Aimantation), pour que ça soit plus simple pour l'utilisateur
+                            //On force les coordonnées de la souris à être exactement celles du point de départ (Aimantation), 
+                            //pour que ça soit plus simple pour l'utilisateur
                             mx = origine.getCx();
                             my = origine.getCy();
                         }

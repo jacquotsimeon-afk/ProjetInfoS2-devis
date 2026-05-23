@@ -7,7 +7,7 @@
  * Représente la surface supérieure d'une pièce.
  * Peut recevoir un revêtement et contenir des trémies (ex: passage d'escalier).
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Clémentine 
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

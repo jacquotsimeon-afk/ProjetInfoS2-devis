@@ -7,7 +7,7 @@
  * Le cœur du bâtiment. Une pièce contient des murs, un sol et un plafond.
  * Gère sa surface brute et additionne les devis de toutes ses surfaces.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Siméon
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

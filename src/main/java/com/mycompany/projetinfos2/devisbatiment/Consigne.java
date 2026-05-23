@@ -7,7 +7,7 @@
  * Contient tout le texte d'aide du logiciel. Permet de séparer les longs 
  * paragraphes d'explication du reste du code pour garder le projet propre.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Clémentine
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

@@ -7,7 +7,7 @@
  * Représente un bâtiment à plusieurs étages. Il contient un tableau de "Niveaux".
  * Calcule son prix total en additionnant les devis de chacun de ses étages.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Clémentine 
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;

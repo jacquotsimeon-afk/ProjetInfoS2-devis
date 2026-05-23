@@ -7,7 +7,7 @@
  * Produit spécifique du catalogue.
  * Hérite de Revetement et gère son propre calcul de prix selon la surface.
  * =========================================================================
- * @author Clémentine / Siméon
+ * @author Clémentine 
  * =========================================================================
  */
 package com.mycompany.projetinfos2.devisbatiment;
@@ -19,6 +19,7 @@ public class Peinture extends Revetement {
         this.idRevetement = id; 
         this.designation = nom; 
         this.prix = p;
+        // Est ce que c'est pour mur/sol/plafond ?
         this.pourMur = m; 
         this.pourSol = s; 
         this.pourPlafond = pl;
