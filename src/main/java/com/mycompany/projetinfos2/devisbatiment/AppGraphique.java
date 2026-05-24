@@ -906,7 +906,7 @@ public class AppGraphique extends Application {
                 //Écriture de l'en-tête du document
                 pw.println("===========================================================");
                 pw.println("             DEVIS DÉTAILLÉ - " + projetActuel.getId().toUpperCase());
-                pw.println("             Généré le : " + new java.util.Date()); // +++ Ajout de la date système
+                pw.println("             Généré le : " + new java.util.Date()); //Ajout de la date système
                 pw.println("===========================================================");
                 
                 // Calcul global via la racine du projet
@@ -1004,6 +1004,5 @@ public class AppGraphique extends Application {
         dialog.showAndWait();
     }
 
-    //POINT D'ENTRÉE : C'est ici que Java démarre réellement le programme
-    public static void main(String[] args) { launch(args); } // +++ Appel natif pour démarrer le moteur JavaFX
+    public static void main(String[] args) { launch(args); } //Appel natif pour démarrer le moteur JavaFX
 }
