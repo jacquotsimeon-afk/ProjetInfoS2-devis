@@ -204,26 +204,40 @@ public class AppGraphique extends Application {
         arbreProjet = new TreeView<>();
         //Ajoute un "espion" qui réagit quand l'utilisateur clique sur un élément de l'arbre
         arbreProjet.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //Si l'élément cliqué n'est pas vide et commence par le mot "Niveau"
-            if (newValue != null && newValue.getValue().startsWith("Niveau ")) {
-                try {
-                    //Découpe le texte pour extraire le numéro du niveau (ex: récupère "1" dans "Niveau 1")
-                    int idN = Integer.parseInt(newValue.getValue().substring(7, newValue.getValue().indexOf(" ")-1));
-                    //Si le projet est bien un immeuble
-                    if (projetActuel instanceof Immeuble) {
-                        //Parcourt tous les niveaux de l'immeuble
+            
+            //SÉCURITÉ : On bloque le changement de vue si l'utilisateur est en train de tracer une pièce !
+            if (pieceEnCours) {
+                zoneTexte.setText("⚠️ Impossible de changer de vue : terminez d'abord la pièce en cours !");
+                return; //Interrompt la méthode ici, on ne change pas le niveau affiché
+            }
+            
+            //Si on a bien cliqué sur un élément et que le projet est un Immeuble
+            if (newValue != null && projetActuel instanceof Immeuble) {
+                
+                //ASTUCE : Remonter l'arborescence (Dossiers parents)
+                TreeItem<String> courant = newValue;
+                //Tant que le nom du dossier ne commence pas par "Niveau " (ex: on a cliqué sur un détail de Mur)
+                while (courant != null && courant.getValue() != null && !courant.getValue().startsWith("Niveau ")) {
+                    courant = courant.getParent(); // On remonte au dossier parent (ex: de Pièce -> Appart -> Niveau)
+                }
+                
+                //Si on a fini par trouver le dossier racine du Niveau
+                if (courant != null && courant.getValue().startsWith("Niveau ")) {
+                    try {
+                        //Découpage propre du texte pour extraire le numéro (ex: "Niveau 1" devient le tableau ["Niveau", "1"])
+                        String[] mots = courant.getValue().split(" ");
+                        int idN = Integer.parseInt(mots[1]); //Récupère le chiffre 1
+                        
+                        // Parcourt tous les niveaux de l'immeuble pour trouver celui qui correspond
                         for (Niveau n : ((Immeuble) projetActuel).getNiveaux()) {
-                            //Si on trouve le niveau qui correspond à l'ID cliqué
                             if (n != null && n.getId() == idN) {
-                                //On le définit comme le "niveau à afficher" à l'écran
-                                niveauAffiche = n;
-                                //On actualise le dessin pour afficher cet étage spécifique
-                                actualiserDessin();
-                                break; //On arrête de chercher puisqu'on l'a trouvé
+                                niveauAffiche = n; //  On modifie la caméra pour regarder cet étage
+                                actualiserDessin(); // On redessine immédiatement le plan
+                                break; // On arrête la recherche
                             }
                         }
-                    }
-                } catch(Exception ex) {} //Ignore silencieusement l'erreur si la conversion en nombre échoue
+                    } catch(Exception ex) {} // Ignore silencieusement s'il y a un bug de lecture du texte
+                }
             }
         });
 
@@ -273,6 +287,10 @@ public class AppGraphique extends Application {
         btnAjoutAppart.setOnAction(e -> {
             //Vérifie qu'un niveau a bien été sélectionné/créé avant
             if (niveauActuel != null) {
+                //On force la caméra à revenir sur l'étage "en chantier"
+                //(Au cas où l'utilisateur regardait un vieux niveau dans l'explorateur)
+                niveauAffiche = niveauActuel; 
+                actualiserDessin();
                 //Crée un objet Appartement (20 pièces max)
                 Appartement a = new Appartement(++compteurAppart, 20);
                 //Ajoute l'appartement au niveau en cours
@@ -286,12 +304,18 @@ public class AppGraphique extends Application {
         
         //Bouton Nouvelle Pièce
         btnNouvellePiece.setOnAction(e -> {
+            //Si c'est un immeuble, on ramène brutalement la vue sur l'étage en cours
+            //Cela évite que l'utilisateur dessine sa nouvelle pièce sur le plan du Rez-de-chaussée par erreur !
+            if (projetActuel instanceof Immeuble) {
+                niveauAffiche = niveauActuel;
+                actualiserDessin();
+            }
             //Crée une pièce avec un ID unique et un tableau de 50 murs maximum
             pieceActuelle = new Piece(compteurPiece++, 50); 
             //Verrouille l'interface en mode "dessin de pièce"
-            pieceEnCours = true; compteurMur = 1; // +++ Réinitialise le compteur de murs pour cette pièce
+            pieceEnCours = true; compteurMur = 1; // Réinitialise le compteur de murs pour cette pièce
             zoneTexte.setText("Pièce initialisée. Cliquez sur 'Ajouter un mur' pour dessiner.");
-            majBoutons(); // +++ Grise les boutons interdits pendant le dessin
+            majBoutons(); //Grise les boutons interdits pendant le dessin
         });
         
         //Bouton Ajouter un Mur (Ouvre le pop-up)
