@@ -12,11 +12,11 @@
  */
 package com.mycompany.projetinfos2.devisbatiment;
 
-// Le mot-clé "abstract" signifie qu'on ne peut pas créer un simple "Batiment". 
+// "abstract" = classe abstraite = on ne peut pas créer un simple "Batiment". 
 // Il faut obligatoirement créer une de ses sous-classes (Maison ou Immeuble).
 public abstract class Batiment {
     
-    // "protected" permet aux sous classes héritant de Batiment d'accéder directement à ces variables
+    // "protected" = que pour les classes "heritière"
     protected String idBatiment;
     protected int nbrNiveaux;
 
