@@ -58,8 +58,8 @@ public class AppGraphique extends Application {
     
     //VARIABLES DE NAVIGATION (Caméra du plan)
     private double zoom = 1.0; //Gère le niveau de zoom (1.0 = 100%)        
-    private double panX = 100; //Décalage horizontal (X) de la caméra par défaut         
-    private double panY = 300; //Décalage vertical (Y) de la caméra par défaut         
+    private double panX = 100; //Décalage x de la caméra par défaut         
+    private double panY = 300; //Décalage y de la caméra par défaut         
     private double lastMouseX, lastMouseY; //Mémorise les coordonnées X et Y de la souris juste avant un mouvement (pour le glisser-déposer)
     
     //COMPOSANTS VISUELS PRINCIPAUX
@@ -373,8 +373,8 @@ public class AppGraphique extends Application {
 
         //Création de la grande colonne de GAUCHE (VBox, espacement 10px)
         VBox menuGauche = new VBox(10);
-        menuGauche.setPadding(new Insets(10)); // +++ Marges intérieures de 10px
-        menuGauche.setPrefWidth(220); // +++ Largeur imposée
+        menuGauche.setPadding(new Insets(10)); // Marges intérieures de 10px
+        menuGauche.setPrefWidth(220); //Largeur imposée
         Label lblExplo = new Label("Explorateur :"); lblExplo.setStyle("-fx-font-weight: bold;");
         // Force le composant "arbreProjet" à s'étirer vers le bas pour prendre l'espace vide
         VBox.setVgrow(arbreProjet, Priority.ALWAYS); 
@@ -536,11 +536,11 @@ public class AppGraphique extends Application {
             saisieMurEnCours = false; //Fin de la saisie
             if (r == ButtonType.OK) { //Si validé
                 try {
-                    // CRÉATION OBJET MÉTIER : Un Mur, contenant un Coin départ et un Coin fin (ID 1 et 2), capacité 20 ouvertures
+                    // CRÉATION OBJET MÉTIER : Un Mur, contenant un Coin départ et un Coin fin
                     Mur m = new Mur(compteurMur++, new Coin(1, Double.parseDouble(tx1.getText()), Double.parseDouble(ty1.getText())), 
-                                   new Coin(2, Double.parseDouble(tx2.getText()), Double.parseDouble(ty2.getText())), 20);
+                    new Coin(2, Double.parseDouble(tx2.getText()), Double.parseDouble(ty2.getText())), 20);
                     
-                    //POLYMORPHISME : Ajout des Portes et des Fenêtres (qui héritent toutes les deux de 'Ouverture')
+                    //Ajout des Portes et des Fenêtres (qui héritent toutes les deux de 'Ouverture')
                     for (int i=0; i<Integer.parseInt(tp.getText()); i++) m.ajouterOuverture(new Porte(i));
                     for (int i=0; i<Integer.parseInt(tf.getText()); i++) m.ajouterOuverture(new Fenetre(i));
                     
@@ -562,7 +562,7 @@ public class AppGraphique extends Application {
                         //Sinon, on met juste à jour l'écran
                         actualiserDessin(); actualiserArbre();
                     }
-                } catch (Exception ex) { zoneTexte.setText("Erreur dans les formats numériques."); } // +++ Sécurité si texte saisi au lieu d'un chiffre
+                } catch (Exception ex) { zoneTexte.setText("Erreur dans les formats numériques."); } // Sécurité si texte ou autre saisi au lieu d'un chiffre
             }
             majBoutons(); //Réactive le bouton Ajouter Mur
         });
@@ -595,7 +595,7 @@ public class AppGraphique extends Application {
         g.add(new Label("Revêtement Plafond :"), 0, 2); g.add(cbPlat, 1, 2);
         dialog.getDialogPane().setContent(g); 
         
-        //Boutton pour recommencer
+        //Bouton pour recommencer
         //Le paramètre CANCEL_CLOSE permet de fermer la fenêtre sans déclencher l'action par défaut
         ButtonType btnRecommencer = new ButtonType("🔄 Recommencer", ButtonBar.ButtonData.CANCEL_CLOSE);
         
@@ -675,7 +675,7 @@ public class AppGraphique extends Application {
         //TRACÉ DES MURS (Épaisseur 3 pixels)
         gc.setLineWidth(3.0);
         
-        //Si c'est une Maison (Tous les murs sont Bleu foncé)
+        //Si c'est une Maison (mur en bleu foncé)
         if (projetActuel instanceof Maison) {
             gc.setStroke(Color.DARKBLUE);
             for (Piece p : ((Maison) projetActuel).getPieces()) if (p != null) dessinerMursPiece(gc, p);
@@ -699,7 +699,7 @@ public class AppGraphique extends Application {
 
     //SOUS-MÉTHODE DE DESSIN : Trace les détails internes d'une pièce
     private void dessinerMursPiece(GraphicsContext gc, Piece p) {
-        //Variables pour calculer le "Centre de Gravité" de la pièce (Moyenne des coordonnées)
+        //Variables pour calculer le "Centre de Gravité" de la pièce (Moyenne des coordonnées) = utile pour afficher nom
         double sommeX = 0, sommeY = 0;
         int nbPointsPourCentre = 0;
 
@@ -855,11 +855,11 @@ public class AppGraphique extends Application {
                 String revMur = (m.getRevetement() != null) ? m.getRevetement().getDesignation() : "Aucun";
                 
                 //CONSTRUCTION DE LA PHRASE D'INFORMATION DU MUR
-                //Concatène la longueur, les coordonnées (X,Y) du Point de Départ (Debut) et d'Arrivée (Fin)
+                //Avec la longueur, les coordonnées (X,Y) du Point de Départ (Debut) et d'Arrivée (Fin) et le revetemeny
                 String infoMur = "Mur " + (i+1) + " : " + String.format("%.2f", m.longueur()) + "m " + 
-                                 "| de [" + m.getDebut().getCx() + " ; " + m.getDebut().getCy() + "] " +
-                                 "à [" + m.getFin().getCx() + " ; " + m.getFin().getCy() + "] " +
-                                 "| Rev: " + revMur;
+                "| de [" + m.getDebut().getCx() + " ; " + m.getDebut().getCy() + "] " +
+                "à [" + m.getFin().getCx() + " ; " + m.getFin().getCy() + "] " +
+                "| Rev: " + revMur;
                 
                 //Ajoute cette grande ligne de détail dans le sous-dossier des murs
                 noeudMurs.getChildren().add(new TreeItem<>(infoMur));
@@ -897,7 +897,7 @@ public class AppGraphique extends Application {
 
     //MÉTHODE : Lit le fichier texte pour créer les objets Revêtement en mémoire
     private void chargerCatalogue(String f) {
-        //Utilisation d'un BufferedReader pour lire le fichier ligne par ligne (Bloc Try-With-Resources)
+        //Utilisation d'un BufferedReader pour lire le fichier ligne par ligne
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             br.readLine(); //Lit (et ignore) la première ligne qui contient les en-têtes des colonnes
             String l;
@@ -945,7 +945,7 @@ public class AppGraphique extends Application {
                 pw.println("MONTANT TOTAL TTC  : " + String.format("%.2f", totalTTC) + " €");
                 pw.println("===========================================================");
                 
-                //Parcours de l'arborescence pour détailler les pièces (Polymorphisme)
+                //Parcours de l'arborescence pour détailler les pièces
                 if (projetActuel instanceof Maison) {
                     // Hauteur par défaut 2.5m pour une maison
                     for (Piece p : ((Maison)projetActuel).getPieces()) if (p != null) ecrirePiece(pw, p, 2.5); 
